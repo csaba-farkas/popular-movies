@@ -4,9 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.csabafarkas.popularmovies.models.Movie;
 import com.csabafarkas.popularmovies.models.MovieCollection;
+import com.csabafarkas.popularmovies.models.RetrofitError;
+import com.csabafarkas.popularmovies.utilites.MovieCallback;
 import com.csabafarkas.popularmovies.utilites.MovieDbService;
 import com.csabafarkas.popularmovies.utilites.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -19,7 +22,7 @@ import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieCallback {
 
     @BindView(R.id.iv) ImageView imageView;
     @BindView(R.id.tv) TextView textView;
@@ -34,23 +37,26 @@ public class MainActivity extends AppCompatActivity {
 //                .load("http://i.imgur.com/DvpvklR.png")
 //                .placeholder(R.drawable.ic_icon_img_placeholder)
 //                .into(imageView);
-        movieDbService = NetworkUtils.getMovieDbService();
-        movieDbService.getMostPopularMovies(BuildConfig.MovieDbApiKey, 1)
-                .enqueue(new Callback<MovieCollection>() {
-                    @Override
-                    public void onResponse(Call<MovieCollection> call, retrofit2.Response<MovieCollection> response) {
+        NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, 1, this);
+    }
 
-                        if (response.isSuccessful()) {
-                            textView.setText(response.raw().toString());
-                        } else {
-                            textView.setText("Call failure - status code: " + response.code());
-                        }
-                    }
+    @Override
+    public void onSuccess(List<Movie> movies) {
+        String s = "";
+        for (Movie movie : movies) {
+            s += movie.getTitle();
+        }
+        textView.setText(s);
+    }
 
-                    @Override
-                    public void onFailure(Call<MovieCollection> call, Throwable t) {
-                        textView.setText("on failure bazmeg");
-                    }
-                });
+    @Override
+    public void onFailure(RetrofitError retrofitError) {
+        Toast.makeText(this, retrofitError.getErrorCode() + " " + retrofitError.getErrorMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onError(Throwable t) {
+        Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+
     }
 }

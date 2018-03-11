@@ -19,7 +19,7 @@ public class MovieCollection implements Parcelable {
     private Integer totalPages;
     @SerializedName("results")
     @Expose
-    private List<Movie> results = null;
+    private List<Movie> movies = null;
     public final static Parcelable.Creator<MovieCollection> CREATOR = new Creator<MovieCollection>() {
 
 
@@ -41,7 +41,7 @@ public class MovieCollection implements Parcelable {
         this.page = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.totalResults = ((Integer) in.readValue((Integer.class.getClassLoader())));
         this.totalPages = ((Integer) in.readValue((Integer.class.getClassLoader())));
-        in.readList(this.results, (com.csabafarkas.popularmovies.models.Movie.class.getClassLoader()));
+        in.readList(this.movies, (com.csabafarkas.popularmovies.models.Movie.class.getClassLoader()));
     }
 
     public MovieCollection() {
@@ -71,19 +71,19 @@ public class MovieCollection implements Parcelable {
         this.totalPages = totalPages;
     }
 
-    public List<Movie> getResults() {
-        return results;
+    public List<Movie> getMovies() {
+        return movies;
     }
 
-    public void setResults(List<Movie> results) {
-        this.results = results;
+    public void setMovies(List<Movie> results) {
+        this.movies = results;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(page);
         dest.writeValue(totalResults);
         dest.writeValue(totalPages);
-        dest.writeList(results);
+        dest.writeList(movies);
     }
 
     public int describeContents() {
