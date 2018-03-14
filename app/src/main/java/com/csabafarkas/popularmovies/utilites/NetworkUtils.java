@@ -42,9 +42,8 @@ public final class NetworkUtils {
         MovieDbService movieDbService = getMovieDbService();
 
         switch (sortType) {
-
             case TOP_RATED:
-                movieDbService.getTopRatedMovies(BuildConfig.MovieDbApiKey, pageNumber)
+                movieDbService.getTopRatedMovies(apiKey, pageNumber)
                         .enqueue(new Callback<MovieCollection>() {
                             @Override
                             public void onResponse(Call<MovieCollection> call, retrofit2.Response<MovieCollection> response) {
@@ -65,7 +64,7 @@ public final class NetworkUtils {
                         });
                 break;
             case MOST_POPULAR:
-                movieDbService.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber)
+                movieDbService.getMostPopularMovies(apiKey, pageNumber)
                         .enqueue(new Callback<MovieCollection>() {
                             @Override
                             public void onResponse(Call<MovieCollection> call, retrofit2.Response<MovieCollection> response) {
