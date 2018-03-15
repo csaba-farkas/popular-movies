@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.csabafarkas.popularmovies.R;
 import com.csabafarkas.popularmovies.models.Movie;
@@ -41,6 +42,10 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             .load(POSTER_BASE_URL + movie.getPosterPath())
             .placeholder(R.drawable.ic_icon_img_placeholder)
             .into(posterImageView);
+
+        // debug
+        TextView debugTv = convertView.findViewById(R.id.debug_tv);
+        debugTv.setText("" + position);
         return convertView;
     }
 }

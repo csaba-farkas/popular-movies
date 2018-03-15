@@ -24,36 +24,50 @@ import butterknife.ButterKnife;
 import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Callback;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements MovieCallback {
 
     @BindView(R.id.activity_main_root_gv)
     GridView rootView;
-    int pageNumber = 1;
+    int pageNumber;
     List<Movie> movieCollection;
+    boolean userScrolled;
+    boolean loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        Timber.plant(new Timber.DebugTree());
+        Timber.tag("MoviePager");
+        Timber.d("Timber was planted. pageNumber: " + pageNumber);
 
         // load more on scroll to bottom
         rootView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                // no need to implement
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    userScrolled = true;
+                    return;
+                }
+                userScrolled = false;
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                final int lastItem = firstVisibleItem + visibleItemCount;
-                if (lastItem == totalItemCount) {
+                if (userScrolled && firstVisibleItem + visibleItemCount == totalItemCount && !loading) {
+                    Timber.d("in onScroll - totalItemcount: " + totalItemCount + ", pageNumber: " + pageNumber);
                     NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber++, MainActivity.this);
+                    loading = true;
                 }
             }
         });
+
+        if (pageNumber == 0) pageNumber = 1;
         NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber, this);
+        Timber.d("onCreate finished! pageNubmber: " + pageNumber);
     }
 
     @Override
@@ -67,11 +81,14 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.containsKey("page_number")) {
             pageNumber = savedInstanceState.getInt("page_number");
+        } else {
+            pageNumber = 1;
         }
     }
 
     @Override
     public void onSuccess(List<Movie> movies) {
+        Timber.d("Adding new movies. Page number: %s", pageNumber);
         if (movieCollection == null) {
             movieCollection = movies;
         } else {
@@ -84,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         } else {
             ((MovieAdapter) rootView.getAdapter()).notifyDataSetChanged();
         }
+        loading = false;
     }
 
     @Override
