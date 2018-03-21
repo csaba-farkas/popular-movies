@@ -39,13 +39,12 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
         ImageView posterImageView = convertView.findViewById(R.id.poster_iv);
         Picasso.with(getContext())
-            .load(POSTER_BASE_URL + movie.getPosterPath())
+            .load(String.format(getContext().getResources().getString(R.string.poster_base_url, movie.getPosterPath())))
             .placeholder(R.drawable.ic_icon_img_placeholder)
             .into(posterImageView);
 
-        // debug
-        TextView debugTv = convertView.findViewById(R.id.debug_tv);
-        debugTv.setText("" + position);
         return convertView;
     }
+
+
 }

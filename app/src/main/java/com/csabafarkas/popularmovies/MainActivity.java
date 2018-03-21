@@ -1,38 +1,33 @@
 package com.csabafarkas.popularmovies;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csabafarkas.popularmovies.adapters.MovieAdapter;
 import com.csabafarkas.popularmovies.models.Movie;
 import com.csabafarkas.popularmovies.models.MovieCollection;
 import com.csabafarkas.popularmovies.models.RetrofitError;
-import com.csabafarkas.popularmovies.utilites.MovieCallback;
-import com.csabafarkas.popularmovies.utilites.MovieDbService;
+import com.csabafarkas.popularmovies.utilites.MovieCollectionCallback;
 import com.csabafarkas.popularmovies.utilites.NetworkUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.Response;
-import retrofit2.Call;
-import retrofit2.Callback;
-import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity implements MovieCallback {
+public class MainActivity extends AppCompatActivity implements MovieCollectionCallback {
 
     @BindView(R.id.activity_main_root_gv)
     GridView rootView;
     int pageNumber;
-    List<Movie> movieCollection;
-    boolean userScrolled;
+    int currentPosition;
+    List<Movie> movies;
     boolean loading;
 
     @Override
@@ -40,40 +35,51 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        Timber.plant(new Timber.DebugTree());
-        Timber.tag("MoviePager");
-        Timber.d("Timber was planted. pageNumber: " + pageNumber);
+
+        if (movies == null) {
+            loading = true;
+            pageNumber++;
+            NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber, this);
+        }
 
         // load more on scroll to bottom
         rootView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    userScrolled = true;
-                    return;
-                }
-                userScrolled = false;
+
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (userScrolled && firstVisibleItem + visibleItemCount == totalItemCount && !loading) {
-                    Timber.d("in onScroll - totalItemcount: " + totalItemCount + ", pageNumber: " + pageNumber);
-                    NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber++, MainActivity.this);
+                if (firstVisibleItem + visibleItemCount == totalItemCount && !loading) {
+                    pageNumber++;
+                    NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber, MainActivity.this);
                     loading = true;
                 }
             }
         });
 
-        if (pageNumber == 0) pageNumber = 1;
-        NetworkUtils.getMostPopularMovies(BuildConfig.MovieDbApiKey, pageNumber, this);
-        Timber.d("onCreate finished! pageNubmber: " + pageNumber);
+        // add onItemClickListener to GridView
+        rootView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, MovieDetailsActivity.class);
+                intent.putExtra(getResources().getString(R.string.poster_url), movies.get(position).getPosterPath());
+                startActivity(intent);
+            }
+        });
+
+        // scroll to current position
+        if (currentPosition >= 0)
+            rootView.smoothScrollToPosition(currentPosition);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("page_number", pageNumber);
+        outState.putInt("page_number", pageNumber); // save last page loaded
+        int cp = rootView.getFirstVisiblePosition();
+        outState.putInt("current_position", rootView.getFirstVisiblePosition());
     }
 
     @Override
@@ -81,22 +87,23 @@ public class MainActivity extends AppCompatActivity implements MovieCallback {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState.containsKey("page_number")) {
             pageNumber = savedInstanceState.getInt("page_number");
-        } else {
-            pageNumber = 1;
+        }
+        if (savedInstanceState.containsKey("current_position")) {
+            currentPosition = savedInstanceState.getInt("current_position");
         }
     }
 
     @Override
-    public void onSuccess(List<Movie> movies) {
-        Timber.d("Adding new movies. Page number: %s", pageNumber);
-        if (movieCollection == null) {
-            movieCollection = movies;
+    public void onSuccess(MovieCollection movieCollection) {
+        pageNumber = movieCollection.getPage();
+        if (movies == null) {
+            movies = movieCollection.getMovies();
         } else {
-            movieCollection.addAll(movies);
+            this.movies.addAll(movieCollection.getMovies());
         }
 
         if (rootView.getAdapter() == null) {
-            MovieAdapter movieAdapter = new MovieAdapter(this, 0, movieCollection);
+            MovieAdapter movieAdapter = new MovieAdapter(this, 0, movies);
             rootView.setAdapter(movieAdapter);
         } else {
             ((MovieAdapter) rootView.getAdapter()).notifyDataSetChanged();

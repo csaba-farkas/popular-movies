@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="title_activity_movie_details">MovieDetailsActivity</string>
+
+    <!-- Movie poster base URL -->
+    <string name="poster_base_url" translatable="false">http://image.tmdb.org/t/p/w500%s</string>
+
+    <!-- Intent extra keys -->
+    <string name="poster_url" translatable="false">imageUrl</string>
 </resources>

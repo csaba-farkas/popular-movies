@@ -1,13 +1,9 @@
 package com.csabafarkas.popularmovies.utilites;
 
 import com.csabafarkas.popularmovies.BuildConfig;
-import com.csabafarkas.popularmovies.models.Movie;
 import com.csabafarkas.popularmovies.models.MovieCollection;
 import com.csabafarkas.popularmovies.models.RetrofitError;
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,15 +26,15 @@ public final class NetworkUtils {
         return RetrofitClient.getClient(BASE_URL).create(MovieDbService.class);
     }
 
-    public static void getMostPopularMovies(String apiKey, int pageNumber, final MovieCallback callback) {
+    public static void getMostPopularMovies(String apiKey, int pageNumber, final MovieCollectionCallback callback) {
         fetchMovies(apiKey, pageNumber, callback, SortType.MOST_POPULAR);
     }
 
-    public static void getTopRatedMovies(String apiKey, int pageNumber, final MovieCallback callback) {
+    public static void getTopRatedMovies(String apiKey, int pageNumber, final MovieCollectionCallback callback) {
         fetchMovies(apiKey, pageNumber, callback, SortType.TOP_RATED);
     }
 
-    private static void fetchMovies(String apiKey, int pageNumber, final MovieCallback callback, SortType sortType) {
+    private static void fetchMovies(String apiKey, int pageNumber, final MovieCollectionCallback callback, SortType sortType) {
         MovieDbService movieDbService = getMovieDbService();
 
         switch (sortType) {
@@ -49,7 +45,7 @@ public final class NetworkUtils {
                             public void onResponse(Call<MovieCollection> call, retrofit2.Response<MovieCollection> response) {
 
                                 if (response.isSuccessful()) {
-                                    callback.onSuccess(response.body().getMovies());
+                                    callback.onSuccess(response.body());
                                 } else {
                                     Gson gson = new Gson();
                                     RetrofitError error = gson.fromJson(response.errorBody().charStream(), RetrofitError.class);
@@ -70,7 +66,7 @@ public final class NetworkUtils {
                             public void onResponse(Call<MovieCollection> call, retrofit2.Response<MovieCollection> response) {
 
                                 if (response.isSuccessful()) {
-                                    callback.onSuccess(response.body().getMovies());
+                                    callback.onSuccess(response.body());
                                 } else {
                                     Gson gson = new Gson();
                                     RetrofitError error = gson.fromJson(response.errorBody().charStream(), RetrofitError.class);
