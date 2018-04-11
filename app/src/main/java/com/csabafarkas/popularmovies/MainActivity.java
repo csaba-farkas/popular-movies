@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements PopularMoviesNetworkCallback {
 
     @BindView(R.id.activity_main_root_gv)
-    private GridView rootView;
+    GridView rootView;
     private int currentSelection;
     private int pageNumber;
     private int currentPosition;

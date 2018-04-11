@@ -25,21 +25,21 @@ import butterknife.ButterKnife;
 public class MovieDetailsActivity extends AppCompatActivity implements PopularMoviesNetworkCallback {
 
     @BindView(R.id.movie_details_poster_iv)
-    private ImageView posterImageView;
+    ImageView posterImageView;
     @BindView(R.id.movie_details_rating_bar)
-    private RatingBar ratingBar;
+    RatingBar ratingBar;
     @BindView(R.id.movie_details_release_date_tv)
-    private TextView releaseDateTv;
+    TextView releaseDateTv;
     @BindView(R.id.movie_details_plot_tv)
-    private TextView plotTv;
+    TextView plotTv;
     @BindView(R.id.movie_details_rating_tv)
-    private TextView ratingTv;
+    TextView ratingTv;
     @BindView(R.id.main_toolbar)
-    private Toolbar titleToolbar;
+    Toolbar titleToolbar;
     @BindView(R.id.movie_details_progressbar)
-    private ProgressBar progressBar;
+    ProgressBar progressBar;
     @BindView(R.id.main_appbar)
-    private AppBarLayout appBarLayout;
+    AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
