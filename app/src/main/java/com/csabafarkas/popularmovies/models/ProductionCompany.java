@@ -7,7 +7,7 @@ import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ProductionCompany implements Parcelable
+public class ProductionCompany implements Parcelable, PopularMoviesModel
 {
 
     @SerializedName("id")
@@ -41,7 +41,7 @@ public class ProductionCompany implements Parcelable
 
     protected ProductionCompany(Parcel in) {
         this.id = ((Integer) in.readValue((Integer.class.getClassLoader())));
-        this.logoPath = ((Object) in.readValue((Object.class.getClassLoader())));
+        this.logoPath = in.readValue((Object.class.getClassLoader()));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
         this.originCountry = ((String) in.readValue((String.class.getClassLoader())));
     }

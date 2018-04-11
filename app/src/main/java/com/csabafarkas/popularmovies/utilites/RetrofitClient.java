@@ -1,7 +1,5 @@
 package com.csabafarkas.popularmovies.utilites;
 
-import com.csabafarkas.popularmovies.BuildConfig;
-
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;

@@ -8,7 +8,7 @@ import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Movie implements Parcelable
+public class Movie implements Parcelable, PopularMoviesModel
 {
 
     @SerializedName("adult")
@@ -106,7 +106,7 @@ public class Movie implements Parcelable
     protected Movie(Parcel in) {
         this.adult = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
         this.backdropPath = ((String) in.readValue((String.class.getClassLoader())));
-        this.belongsToCollection = ((Object) in.readValue((Object.class.getClassLoader())));
+        this.belongsToCollection = in.readValue((Object.class.getClassLoader()));
         this.budget = ((Integer) in.readValue((Integer.class.getClassLoader())));
         in.readList(this.genres, (com.csabafarkas.popularmovies.models.Genre.class.getClassLoader()));
         this.homepage = ((String) in.readValue((String.class.getClassLoader())));

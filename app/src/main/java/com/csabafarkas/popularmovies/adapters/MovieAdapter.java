@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.csabafarkas.popularmovies.R;
 import com.csabafarkas.popularmovies.models.Movie;
@@ -21,8 +20,6 @@ import java.util.List;
  */
 
 public class MovieAdapter extends ArrayAdapter<Movie> {
-
-    private final String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w500";
 
     public MovieAdapter(@NonNull Context context, int resource, @NonNull List<Movie> movies) {
         super(context, resource, movies);
@@ -37,9 +34,11 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item_movie, parent, false);
         }
 
+        if (movie == null) return convertView;
+
         ImageView posterImageView = convertView.findViewById(R.id.poster_iv);
         Picasso.with(getContext())
-            .load(String.format(getContext().getResources().getString(R.string.poster_base_url, movie.getPosterPath())))
+            .load(String.format(getContext().getResources().getString(R.string.poster_base_url_185), movie.getPosterPath()))
             .placeholder(R.drawable.ic_icon_img_placeholder)
             .into(posterImageView);
 

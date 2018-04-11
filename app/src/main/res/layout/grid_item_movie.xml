@@ -7,6 +7,7 @@
         android:id="@+id/poster_iv"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/poster_image_description"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
