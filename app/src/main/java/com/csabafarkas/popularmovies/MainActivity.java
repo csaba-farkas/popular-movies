@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesNetw
         super.onSaveInstanceState(outState);
         outState.putInt("current_position", rootView.getFirstVisiblePosition());
         outState.putInt("current_selection", currentSelection);
-        outState.putSerializable("movies", movies.toArray());
     }
 
     @Override
