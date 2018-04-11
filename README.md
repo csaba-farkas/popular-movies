@@ -1,7 +1,5 @@
 # Popular Movies - Stage 1
 
-# Popular Movies - Stage 1
-
 You need an MovieDB API key to use this app. Go to https://www.themoviedb.org/ to create your account and apply for an API key.
 
 Then create a gradle.properties file in the root directory of the project with the following content:
